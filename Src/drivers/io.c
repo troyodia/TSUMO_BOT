@@ -1,8 +1,8 @@
 #include "io.h"
 #include "../common/defines.h"
 #include "../common/assert_handler.h"
+#include "adc.h"
 #include "stm32l4xx.h"
-#include <stdint.h>
 #include <assert.h>
 #include <stddef.h>
 
@@ -36,29 +36,16 @@ static_assert(sizeof(io_ports_e) == 1,
     {                                                                                              \
         IO_MODE_INPUT, IO_PORT_PD, IO_SPEED_LOW, IO_TYPE_PP, IO_AF_NONE                            \
     }
-
+#define ADC_PIN_CONFIG                                                                             \
+    {                                                                                              \
+        IO_MODE_ANALOG, IO_NO_PUPD, IO_SPEED_LOW, IO_TYPE_PP, IO_AF_NONE                           \
+    }
 static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
     // line detectors set up as analog input
-    [IO_LD_FRONT_LEFT] = { .mode = IO_MODE_ANALOG,
-                           .pupd = IO_NO_PUPD,
-                           .speed = IO_SPEED_LOW,
-                           .type = IO_TYPE_PP,
-                           .af = IO_AF_NONE },
-    [IO_LD_BACK_LEFT] = { .mode = IO_MODE_ANALOG,
-                          .pupd = IO_NO_PUPD,
-                          .speed = IO_SPEED_LOW,
-                          .type = IO_TYPE_PP,
-                          .af = IO_AF_NONE },
-    [IO_LD_FRONT_RIGHT] = { .mode = IO_MODE_ANALOG,
-                            .pupd = IO_NO_PUPD,
-                            .speed = IO_SPEED_LOW,
-                            .type = IO_TYPE_PP,
-                            .af = IO_AF_NONE },
-    [IO_LD_BACK_RIGHT] = { .mode = IO_MODE_ANALOG,
-                           .pupd = IO_NO_PUPD,
-                           .speed = IO_SPEED_LOW,
-                           .type = IO_TYPE_PP,
-                           .af = IO_AF_NONE },
+    [IO_LD_FRONT_LEFT] = ADC_PIN_CONFIG,
+    [IO_LD_BACK_LEFT] = ADC_PIN_CONFIG,
+    [IO_LD_FRONT_RIGHT] = ADC_PIN_CONFIG,
+    [IO_LD_BACK_RIGHT] = ADC_PIN_CONFIG,
     // test led setup as an output, held low initiailly
     [IO_TEST_LED] = { .mode = IO_MODE_OUPUT,
                       .pupd = IO_NO_PUPD,
@@ -152,6 +139,7 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
      * mode = alternate function
      * pupd = no pupd
      * type = open drain (important)*/
+
     [IO_I2C_SCL] = { .mode = IO_MODE_ALTFN,
                      .pupd = IO_NO_PUPD,
                      .speed = IO_SPEED_VERY_HIGH,
@@ -200,8 +188,10 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
     [IO_UNUSED_24] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_25] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_26] = UNUSED_PIN_CONFIG,
-
 };
+static io_e io_adc_pins[] = { IO_LD_FRONT_LEFT, IO_LD_BACK_LEFT, IO_LD_FRONT_RIGHT,
+                              IO_LD_BACK_RIGHT };
+
 void io_init(void)
 {
     io_e io_pin;
@@ -273,6 +263,7 @@ void io_configure(io_e io, const struct io_config *config)
         break;
 
     case IO_MODE_ANALOG:
+        io_set_analog_switch_crl_reg(io);
         break;
     }
 }
@@ -368,6 +359,76 @@ void io_set_AF(io_e io, io_af_e af)
     }
     GPIO->AFR[af_section] &= ~(0xF << (pin_idx * 4));
     GPIO->AFR[af_section] |= (af << (pin_idx * 4));
+}
+void io_set_analog_switch_crl_reg(io_e io)
+{
+    const uint8_t pin = io_get_pin_idx(io);
+    const uint8_t port = io_get_port(io);
+    GPIO_TypeDef *GPIO = gpio_port_regs[port];
+    GPIO->ASCR |= (0x1 << pin);
+}
+io_e *get_io_adc_pins(uint8_t *size)
+{
+    *size = ARRAY_SIZE(io_adc_pins);
+    return io_adc_pins;
+}
+uint8_t io_adc_idx(io_ports_e io)
+{
+    uint8_t idx;
+    switch (io) {
+    case IO_PC_0:
+        idx = ADC2_IN1;
+        break;
+    case IO_PC_1:
+        idx = ADC2_IN2;
+        break;
+    case IO_PC_2:
+        idx = ADC2_IN3;
+        break;
+    case IO_PC_3:
+        idx = ADC2_IN4;
+        break;
+    case IO_PA_0:
+        idx = ADC2_IN5;
+        break;
+    case IO_PA_1:
+        idx = ADC2_IN6;
+        break;
+    case IO_PA_2:
+        idx = ADC2_IN7;
+        break;
+    case IO_PA_3:
+        idx = ADC2_IN8;
+        break;
+    case IO_PA_4:
+        idx = ADC2_IN9;
+        break;
+    case IO_PA_5:
+        idx = ADC2_IN10;
+        break;
+    case IO_PA_6:
+        idx = ADC2_IN11;
+        break;
+    case IO_PA_7:
+        idx = ADC2_IN12;
+        break;
+    case IO_PC_4:
+        idx = ADC2_IN13;
+        break;
+    case IO_PC_5:
+        idx = ADC2_IN14;
+        break;
+    case IO_PB_0:
+        idx = ADC2_IN15;
+        break;
+    case IO_PB_1:
+        idx = ADC2_IN16;
+        break;
+    default:
+        idx = 0;
+        break;
+    }
+    return idx;
 }
 void io_get_io_config(io_e io, struct io_config *current_config)
 {
@@ -519,17 +580,16 @@ void EXTI4_IRQHandler(void)
 }
 void EXTI9_5_IRQHandler(void)
 {
-    // io_ports_e io;
-    // for (io = IO_PA_5; io <= IO_PA_9; io++) {
-    //     io_isr((io_e)io);
-    // }
-    // for (io = IO_PB_5; io <= IO_PB_9; io++) {
-    //     io_isr((io_e)io);
-    // }
-    // for (io = IO_PC_5; io <= IO_PC_9; io++) {
-    //     io_isr((io_e)io);
-    // }
-    io_isr((io_e)IO_PA_8);
+    io_ports_e io;
+    for (io = IO_PA_5; io <= IO_PA_9; io++) {
+        io_isr((io_e)io);
+    }
+    for (io = IO_PB_5; io <= IO_PB_9; io++) {
+        io_isr((io_e)io);
+    }
+    for (io = IO_PC_5; io <= IO_PC_9; io++) {
+        io_isr((io_e)io);
+    }
 }
 void EXTI15_10_IRQHandler(void)
 {

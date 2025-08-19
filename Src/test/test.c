@@ -9,6 +9,7 @@
 #include "../drivers/pwm.h"
 #include "../drivers/tb6612fng.h"
 #include "../app/drive.h"
+#include "../drivers/adc.h"
 static const io_e io_pins[] = { IO_I2C_SDA,           IO_I2C_SCL,
                                 IO_LD_FRONT_LEFT,     IO_LD_BACK_LEFT,
                                 IO_UART_TX,           IO_UART_RX,
@@ -298,6 +299,38 @@ void test_stop_motors_assert(void)
     ASSERT(0);
     while (0)
         ;
+}
+SUPPRESS_UNUSED
+void test_adc(void)
+{
+    test_setup();
+    trace_init();
+    adc_init();
+    volatile int j;
+    adc_channel_values adc_channel_data = { 0 };
+    while (1) {
+        adc_read_channel_values(adc_channel_data);
+        // channel 1 -> index 0
+        // using (i+1) to match actual ADC channel structure, i.e. 1-16 rather than 0-15
+        for (uint8_t i = 0; i < ADC_CHANNEL_CNT; i++) {
+            TRACE("ADC CHANNEL %u | VAL : %u\n", i, adc_channel_data[i]);
+        }
+        BUSY_WAIT_ms(300);
+    };
+}
+SUPPRESS_UNUSED
+void test_adc_single(void)
+{
+    test_setup();
+    trace_init();
+    adc_single_init();
+    volatile int j;
+    uint32_t value;
+    while (1) {
+        adc_read_value(&value);
+        TRACE("ADC CHANNEL %u | VAL : %u", 15, value);
+        BUSY_WAIT_ms(500);
+    };
 }
 int main()
 {

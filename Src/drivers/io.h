@@ -1,6 +1,8 @@
 #ifndef IO_H
 #define IO_H
 #include "stdbool.h"
+#include <stdint.h>
+
 // ENUMS
 typedef enum
 {
@@ -59,7 +61,7 @@ typedef enum
 typedef enum
 {
     // PA
-    IO_LD_FRONT_LEFT = IO_PA_0,
+    IO_LD_FRONT_LEFT = IO_PA_0, // LD-> Line detect
     IO_LD_BACK_LEFT = IO_PA_1,
     IO_UNUSED_1 = IO_PA_2,
     IO_UNUSED_2 = IO_PA_3,
@@ -222,6 +224,9 @@ void io_set_output_speed(io_e io, io_ouput_speed_e speed);
 void io_set_AF(io_e io, io_af_e af);
 void io_set_output(io_e io, io_out_e out);
 io_in_e io_get_input(io_e io);
+io_e *get_io_adc_pins(uint8_t *size);
+uint8_t io_adc_idx(io_ports_e io);
+void io_set_analog_switch_crl_reg(io_e io);
 
 typedef void (*isr_function)(void);
 void io_interrupt_clock_init(void);
