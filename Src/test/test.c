@@ -10,6 +10,7 @@
 #include "../drivers/tb6612fng.h"
 #include "../app/drive.h"
 #include "../drivers/adc.h"
+#include "../drivers/qre1113.h"
 static const io_e io_pins[] = { IO_I2C_SDA,           IO_I2C_SCL,
                                 IO_LD_FRONT_LEFT,     IO_LD_BACK_LEFT,
                                 IO_UART_TX,           IO_UART_RX,
@@ -288,7 +289,7 @@ static void test_drive(void)
     }
 }
 SUPPRESS_UNUSED
-void test_stop_motors_assert(void)
+static void test_stop_motors_assert(void)
 {
     test_setup();
     trace_init();
@@ -301,7 +302,7 @@ void test_stop_motors_assert(void)
         ;
 }
 SUPPRESS_UNUSED
-void test_adc(void)
+static void test_adc(void)
 {
     test_setup();
     trace_init();
@@ -318,8 +319,9 @@ void test_adc(void)
         BUSY_WAIT_ms(300);
     };
 }
+
 SUPPRESS_UNUSED
-void test_adc_single(void)
+static void test_adc_single(void)
 {
     test_setup();
     trace_init();
@@ -329,6 +331,24 @@ void test_adc_single(void)
     while (1) {
         adc_read_value(&value);
         TRACE("ADC CHANNEL %u | VAL : %u", 15, value);
+        BUSY_WAIT_ms(500);
+    };
+}
+SUPPRESS_UNUSED
+static void test_qre1113(void)
+{
+    test_setup();
+    trace_init();
+    qre1113_init();
+    volatile int j;
+    struct qre1113_voltages voltages = { 0, 0, 0, 0 };
+    while (1) {
+        qre1113_get_voltages(&voltages);
+
+        TRACE("LINE SENSOR FRONT RIGHT: %u", voltages.qre1113_front_right);
+        TRACE("LINE SENSOR FRONT LEFT: %u", voltages.qre1113_front_left);
+        TRACE("LINE SENSOR BACK RIGHT: %u", voltages.qre1113_back_right);
+        TRACE("LINE SENSOR BACK LEFT: %u\n", voltages.qre1113_back_left);
         BUSY_WAIT_ms(500);
     };
 }

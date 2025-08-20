@@ -161,7 +161,6 @@ void ADC1_2_IRQHandler(void)
     }
 }
 
-SUPPRESS_UNUSED
 void adc_read_channel_values(adc_channel_values ch_vals)
 
 {
