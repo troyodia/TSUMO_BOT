@@ -69,6 +69,7 @@ CPPCHECK_FLAGS = \
 C_SOURCES_WITH_HEADERS = \
 	Src/app/drive.c \
 	Src/app/enemy.c \
+	Src/app/line.c \
 	Src/drivers/io.c \
 	Src/drivers/mcu_init.c \
 	Src/drivers/led.c \

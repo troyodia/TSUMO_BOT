@@ -9,6 +9,7 @@
 #include "../drivers/pwm.h"
 #include "../drivers/tb6612fng.h"
 #include "../app/drive.h"
+#include "../app/line.h"
 #include "../drivers/adc.h"
 #include "../drivers/qre1113.h"
 static const io_e io_pins[] = { IO_I2C_SDA,           IO_I2C_SCL,
@@ -350,6 +351,56 @@ static void test_qre1113(void)
         TRACE("LINE SENSOR BACK RIGHT: %u", voltages.qre1113_back_right);
         TRACE("LINE SENSOR BACK LEFT: %u\n", voltages.qre1113_back_left);
         BUSY_WAIT_ms(500);
+    };
+}
+SUPPRESS_UNUSED
+static char *line_to_string(line_pos_e line)
+{
+    switch (line) {
+    case LINE_FRONT:
+        return "LINE FRONT";
+        break;
+    case LINE_BACK:
+        return "LINE BACK";
+        break;
+    case LINE_LEFT:
+        return "LINE LEFT";
+        break;
+    case LINE_RIGHT:
+        return "LINE RIGHT";
+        break;
+    case LINE_FRONT_LEFT:
+        return "LINE FRONT LEFT";
+        break;
+    case LINE_FRONT_RIGHT:
+        return "LINE FRONT RIGHT";
+        break;
+    case LINE_BACK_LEFT:
+        return "LINE BACK LEFT";
+        break;
+    case LINE_BACK_RIGHT:
+        return "LINE BACK RIGHT";
+        break;
+    case LINE_DIAGONAL_LEFT:
+        return "LINE DIAGONAL LEFT";
+        break;
+    case LINE_DIAGONAL_RIGHT:
+        return "LINE DIAGONAL RIGHT";
+        break;
+    default:
+        return "LINE NONE";
+    }
+}
+SUPPRESS_UNUSED
+static void test_line_detect(void)
+{
+    test_setup();
+    trace_init();
+    line_init();
+    volatile int j;
+    while (1) {
+        TRACE("LINE POS: %s", line_to_string(get_line_position()));
+        BUSY_WAIT_ms(200);
     };
 }
 int main()
