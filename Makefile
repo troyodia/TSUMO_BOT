@@ -80,10 +80,12 @@ C_SOURCES_WITH_HEADERS = \
 	Src/drivers/adc.c \
 	Src/drivers/qre1113.c \
 	Src/drivers/i2c.c \
+	Src/drivers/urm09.c \
 	Src/common/ring_buffer.c \
 	Src/common/assert_handler.c \
 	Src/common/trace.c \
 	external/printf/printf.c \
+#	Src/drivers/vl53l0x.c 
 
 ifndef TEST
 C_SOURCES =  \

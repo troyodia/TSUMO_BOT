@@ -48,18 +48,6 @@ static void adc_set_channel_sequences()
         }
         *adc2_seq_regs[adc_seq_idx] &= ~(0x1F << (6 * (adc_channel)));
         *adc2_seq_regs[adc_seq_idx] |= (adc_channels[channel] << (6 * adc_channel));
-
-        // if (adc_channels[channel] < 4) {
-        //     ADC2->SQR1 &= ~(0x1F << (6 * (adc_channels[channel])));
-        //     ADC2->SQR1 |= (adc_channels[channel] << (6 * adc_channels[channel]));
-        // } else if (adc_channels[channel] > 4) {
-        //     ADC2->SQR1 &= ~(0x1F << (6 * (adc_channels[channel])));
-        //     ADC2->SQR1 |= (adc_channels[channel] << (6 * adc_channels[channel]));
-        // }
-        // if (adc_channels[channel] < 4) {
-        //     ADC2->SQR1 &= ~(0x1F << (6 * (adc_channels[channel])));
-        //     ADC2->SQR1 |= (adc_channels[channel] << (6 * adc_channels[channel]));
-        // }
     }
 }
 

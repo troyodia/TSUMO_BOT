@@ -88,10 +88,11 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
 
     /* Range sensor interrupt output open drain
      * A 10k ohm external pull up resistor is suggested but the microcontrollers internal pull up
-     is
-     * being used */
+     is being used
+     * The breakout board for the sensor already has a PU resistor so no need to configure one for
+     the pin*/
     [IO_RANGE_SENSOR_INT_FRONT] = { .mode = IO_MODE_INPUT,
-                                    .pupd = IO_PORT_PU,
+                                    .pupd = IO_NO_PUPD,
                                     .speed = IO_SPEED_LOW,
                                     .type = IO_TYPE_PP,
                                     .af = IO_AF_NONE },
