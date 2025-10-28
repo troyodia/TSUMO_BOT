@@ -47,7 +47,7 @@ void pwm_init(void)
     // set capture mode as output
     TIM3->CCMR1 = (TIM3->CCMR1 & ~0x3) | (TIM3->CCMR1 & ~(0x3 << 8));
     // set mode as PWM 1 for channel 1 and 2
-    TIM3->CCMR1 = (TIM3->CCMR1 & ~(0x7 << 4)) | (TIM3->CCMR1 & ~(0x7 << 12));
+    TIM3->CCMR1 = (TIM3->CCMR1 & ~(0xF << 4)) | (TIM3->CCMR1 & ~(0xF << 12));
     TIM3->CCMR1 = (TIM3->CCMR1 | (0x6 << 4)) | (TIM3->CCMR1 | (0x6 << 12));
     // enable preload register
     TIM3->CCMR1 = (TIM3->CCMR1 | (0x1 << 3)) | (TIM3->CCMR1 | (0x1 << 11));

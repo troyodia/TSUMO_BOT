@@ -13,6 +13,7 @@
 #include "../drivers/adc.h"
 #include "../drivers/qre1113.h"
 #include "../drivers/i2c.h"
+#include "../drivers/urm09.h"
 static const io_e io_pins[] = { IO_I2C_SDA,           IO_I2C_SCL,
                                 IO_LD_FRONT_LEFT,     IO_LD_BACK_LEFT,
                                 IO_UART_TX,           IO_UART_RX,
@@ -411,47 +412,53 @@ static void test_i2c(void)
     trace_init();
     i2c_init();
     volatile int j;
-    uint8_t vl53l0x_product_id = 0;
-    uint8_t write_val = 0xAB;
-    uint8_t vl53l0x_read_result = 0;
-    // have to set XHSUT Pin HIGH for VL53L0X to pull the sensor from standby mode
-    io_set_output(IO_XSHUT_FRONT, IO_OUT_HIGH);
-    // set the default slave address of the sensor
-    i2c_set_slave_addr(0x29);
+    uint8_t urm09_product_id = 0;
+    i2c_set_slave_addr(0x11);
     // wait a bit for sensor to leave standby
     BUSY_WAIT_ms(200);
 
     while (1) {
-        i2c_result_code_e result = i2c_read_addr8_data8(0xC0, &vl53l0x_product_id);
+        i2c_result_code_e result = i2c_read_addr8_data8(0x01, &urm09_product_id);
         if (result) {
             TRACE("I2C result error: %d", result);
         } else {
-            if (vl53l0x_product_id == 0xEE) {
-                TRACE("Valid VL53L0X PRODUCT ID (0xEE): %#X", vl53l0x_product_id);
+            if (urm09_product_id == 0x01) {
+                TRACE("Valid URM09 PRODUCT ID (0x01): %#X", urm09_product_id);
             } else {
-                TRACE("Invalid VL53L0X PRODUCT ID (expected 0xEE): %#X", vl53l0x_product_id);
-            }
-        }
-        BUSY_WAIT_ms(200);
-        result = i2c_write_addr8_data8(0x01, &write_val);
-        if (result) {
-            TRACE("I2C result error: %d", result);
-        }
-        result = i2c_read_addr8_data8(0x01, &vl53l0x_read_result);
-        if (result) {
-            TRACE("I2C result error: %d", result);
-        } else {
-            if (vl53l0x_read_result == write_val) {
-                TRACE("Valid VL53L0X WRITE TEST: Written %#X, Read %#X", write_val,
-                      vl53l0x_read_result);
-            } else {
-                TRACE("Invalid VL53L0X WRITE TEST: Written %#X, Read %#X", write_val,
-                      vl53l0x_read_result);
+                TRACE("Invalid URM09 PRODUCT ID (expected 0x01): %#X", urm09_product_id);
             }
         }
         BUSY_WAIT_ms(200);
     }
 }
+SUPPRESS_UNUSED
+static void test_urm09(void)
+{
+    test_setup();
+    trace_init();
+    urm09_init();
+    volatile int j;
+    uint16_t range = 0;
+    urm09_set_measurement_mode(URM09_MEASURE_MODE_AUTOMATIC);
+    // wait a bit for sensor
+    BUSY_WAIT_ms(200);
+
+    while (1) {
+        urm09_result_e result = urm09_get_distance(&range);
+        if (result) {
+            TRACE("I2C result error: %d", result);
+        } else {
+
+            if (range != URM09_OUT_OF_RANGE) {
+                TRACE("URM09 detected range (cm): %u", range);
+            } else {
+                TRACE("URM09 out of range (cm): %u", range);
+            }
+        }
+        BUSY_WAIT_ms(200);
+    }
+}
+
 int main()
 {
     TEST();
