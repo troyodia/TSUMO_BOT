@@ -85,7 +85,6 @@ C_SOURCES_WITH_HEADERS = \
 	Src/common/assert_handler.c \
 	Src/common/trace.c \
 	external/printf/printf.c \
-#	Src/drivers/vl53l0x.c 
 
 ifndef TEST
 C_SOURCES =  \
