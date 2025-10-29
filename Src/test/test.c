@@ -8,12 +8,13 @@
 #include "../drivers/ir_remote.h"
 #include "../drivers/pwm.h"
 #include "../drivers/tb6612fng.h"
-#include "../app/drive.h"
-#include "../app/line.h"
 #include "../drivers/adc.h"
 #include "../drivers/qre1113.h"
 #include "../drivers/i2c.h"
 #include "../drivers/urm09.h"
+#include "../app/drive.h"
+#include "../app/line.h"
+#include "../app/enemy.h"
 static const io_e io_pins[] = { IO_I2C_SDA,           IO_I2C_SCL,
                                 IO_LD_FRONT_LEFT,     IO_LD_BACK_LEFT,
                                 IO_UART_TX,           IO_UART_RX,
@@ -458,7 +459,20 @@ static void test_urm09(void)
         BUSY_WAIT_ms(200);
     }
 }
-
+SUPPRESS_UNUSED
+void test_enemy(void)
+{
+    test_setup();
+    trace_init();
+    enemy_init();
+    volatile int j;
+    uint16_t range;
+    while (1) {
+        struct enemy enemy = enemy_get(&range);
+        TRACE("%s %s %u", enemy_pos_to_str(enemy.position), enemy_range_to_str(enemy.range), range);
+        BUSY_WAIT_ms(300);
+    }
+}
 int main()
 {
     TEST();
