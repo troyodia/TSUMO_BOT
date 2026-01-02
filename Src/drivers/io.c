@@ -30,11 +30,11 @@ static_assert(sizeof(io_ports_e) == 1,
 #define IO_PIN_CNT (48U)
 #define IO_EXTI_INTERRUPT_LINES_CNT (7U)
 /* Array holds the initial config for each pin
- * Configure unused pins as input with pull down resistors
+ * Configure unused pins as analog with no pull up or pull downs
  * Configure the pin to prevent unpredictable noise for floating pins   */
 #define UNUSED_PIN_CONFIG                                                                          \
     {                                                                                              \
-        IO_MODE_INPUT, IO_PORT_PD, IO_SPEED_LOW, IO_TYPE_PP, IO_AF_NONE                            \
+        IO_MODE_ANALOG, IO_PORT_PD, IO_SPEED_LOW, IO_TYPE_PP, IO_AF_NONE                           \
     }
 #define ADC_PIN_CONFIG                                                                             \
     {                                                                                              \
