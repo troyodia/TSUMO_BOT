@@ -52,32 +52,7 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
                       .speed = IO_SPEED_VERY_HIGH,
                       .type = IO_TYPE_PP,
                       .af = IO_AF_NONE },
-    /* Range sensor xshut set up as outputs*/
-    [IO_XSHUT_FRONT_LEFT] = { .mode = IO_MODE_OUPUT,
-                              .pupd = IO_NO_PUPD,
-                              .speed = IO_SPEED_VERY_HIGH,
-                              .type = IO_TYPE_PP,
-                              .af = IO_AF_NONE },
-    [IO_XSHUT_FRONT_RIGHT] = { .mode = IO_MODE_OUPUT,
-                               .pupd = IO_NO_PUPD,
-                               .speed = IO_SPEED_VERY_HIGH,
-                               .type = IO_TYPE_PP,
-                               .af = IO_AF_NONE },
-    [IO_XSHUT_RIGHT] = { .mode = IO_MODE_OUPUT,
-                         .pupd = IO_NO_PUPD,
-                         .speed = IO_SPEED_VERY_HIGH,
-                         .type = IO_TYPE_PP,
-                         .af = IO_AF_NONE },
-    [IO_XSHUT_LEFT] = { .mode = IO_MODE_OUPUT,
-                        .pupd = IO_NO_PUPD,
-                        .speed = IO_SPEED_VERY_HIGH,
-                        .type = IO_TYPE_PP,
-                        .af = IO_AF_NONE },
-    [IO_XSHUT_FRONT] = { .mode = IO_MODE_OUPUT,
-                         .pupd = IO_NO_PUPD,
-                         .speed = IO_SPEED_VERY_HIGH,
-                         .type = IO_TYPE_PP,
-                         .af = IO_AF_NONE },
+
     // IR reciever setup as an input
     // NO PUPD because the IR reciever has an internal PU resistor
     [IO_IR_REMOTE] = { .mode = IO_MODE_INPUT,
@@ -86,16 +61,6 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
                        .type = IO_TYPE_PP,
                        .af = IO_AF_NONE },
 
-    /* Range sensor interrupt output open drain
-     * A 10k ohm external pull up resistor is suggested but the microcontrollers internal pull up
-     is being used
-     * The breakout board for the sensor already has a PU resistor so no need to configure one for
-     the pin*/
-    [IO_RANGE_SENSOR_INT_FRONT] = { .mode = IO_MODE_INPUT,
-                                    .pupd = IO_NO_PUPD,
-                                    .speed = IO_SPEED_LOW,
-                                    .type = IO_TYPE_PP,
-                                    .af = IO_AF_NONE },
     /* uart transmit
      * mode: alternate function
      * pupd: no pupd (output not required)*/
@@ -163,6 +128,11 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
                              .speed = IO_SPEED_VERY_HIGH,
                              .type = IO_TYPE_PP,
                              .af = IO_AF_2 },
+
+    [IO_RANGE_SENSOR_INT_FRONT_UNUSED] = UNUSED_PIN_CONFIG,
+    [IO_XSHUT_FRONT_RIGHT_UNUSED] = UNUSED_PIN_CONFIG,
+    [IO_XSHUT_FRONT_UNUSED] = UNUSED_PIN_CONFIG,
+    [IO_XSHUT_LEFT_UNUSED] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_1] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_2] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_3] = UNUSED_PIN_CONFIG,
@@ -189,6 +159,8 @@ static const struct io_config io_pins_initial_configs[IO_PIN_CNT] = {
     [IO_UNUSED_24] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_25] = UNUSED_PIN_CONFIG,
     [IO_UNUSED_26] = UNUSED_PIN_CONFIG,
+    [IO_UNUSED_27] = UNUSED_PIN_CONFIG,
+    [IO_UNUSED_28] = UNUSED_PIN_CONFIG,
 };
 static io_e io_adc_pins[] = { IO_LD_FRONT_LEFT, IO_LD_BACK_LEFT, IO_LD_FRONT_RIGHT,
                               IO_LD_BACK_RIGHT };
@@ -206,9 +178,9 @@ void io_init(void)
         io_configure(io_pin, &io_pins_initial_configs[io_pin]);
     }
 
-    io_configure(IO_UNUSED_27, &io_unused_config);
-    io_configure(IO_UNUSED_28, &io_unused_config);
     io_configure(IO_UNUSED_29, &io_unused_config);
+    io_configure(IO_UNUSED_30, &io_unused_config);
+    io_configure(IO_UNUSED_31, &io_unused_config);
 }
 static uint8_t io_get_port(io_e io)
 {

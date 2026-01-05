@@ -19,7 +19,7 @@ void qre1113_get_voltages(struct qre1113_voltages *voltages)
 
     adc_read_channel_values(adc_qre1113_voltages);
     voltages->qre1113_front_left = adc_qre1113_voltages[io_adc_idx(IO_PA_0)];
-    voltages->qre1113_back_left = adc_qre1113_voltages[io_adc_idx(IO_PA_1)];
-    voltages->qre1113_front_right = adc_qre1113_voltages[io_adc_idx(IO_PA_4)];
+    voltages->qre1113_back_left = adc_qre1113_voltages[io_adc_idx(IO_PA_4)];
+    voltages->qre1113_front_right = adc_qre1113_voltages[io_adc_idx(IO_PA_1)];
     voltages->qre1113_back_right = adc_qre1113_voltages[io_adc_idx(IO_PB_0)];
 }

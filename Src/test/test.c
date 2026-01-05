@@ -15,17 +15,12 @@
 #include "../app/drive.h"
 #include "../app/line.h"
 #include "../app/enemy.h"
-static const io_e io_pins[] = { IO_I2C_SDA,           IO_I2C_SCL,
-                                IO_LD_FRONT_LEFT,     IO_LD_BACK_LEFT,
-                                IO_UART_TX,           IO_UART_RX,
-                                IO_LD_FRONT_RIGHT,    IO_XSHUT_LEFT,
-                                IO_XSHUT_FRONT_LEFT,  IO_XSHUT_RIGHT,
-                                IO_XSHUT_FRONT_RIGHT, IO_XSHUT_FRONT,
-                                IO_LD_BACK_RIGHT,     IO_RANGE_SENSOR_INT_FRONT,
-                                IO_MOTOR_LEFT_CH1,    IO_MOTOR_LEFT_CH2,
-                                IO_MOTOR_RIGHT_CH1,   IO_MOTOR_RIGHT_CH2,
-                                IO_MOTOR_PWM_LEFT,    IO_MOTOR_PWM_RIGHT,
-                                IO_IR_REMOTE,         IO_TEST_LED };
+static const io_e io_pins[] = { IO_I2C_SDA,        IO_I2C_SCL,         IO_LD_FRONT_LEFT,
+                                IO_LD_BACK_LEFT,   IO_UART_TX,         IO_UART_RX,
+                                IO_LD_FRONT_RIGHT, IO_LD_BACK_RIGHT,   IO_MOTOR_LEFT_CH1,
+                                IO_MOTOR_LEFT_CH2, IO_MOTOR_RIGHT_CH1, IO_MOTOR_RIGHT_CH2,
+                                IO_MOTOR_PWM_LEFT, IO_MOTOR_PWM_RIGHT, IO_IR_REMOTE,
+                                IO_TEST_LED };
 static void test_setup(void)
 {
     mcu_init();
