@@ -4,6 +4,7 @@
 #include "../common/trace.h"
 #include "../drivers/led.h"
 #include "../common/defines.h"
+#include "../common/systick.h"
 #include "../drivers/uart.h"
 #include "../drivers/ir_remote.h"
 #include "../drivers/pwm.h"
@@ -466,6 +467,21 @@ void test_enemy(void)
         struct enemy enemy = enemy_get(&range);
         TRACE("%s %s %u", enemy_pos_to_str(enemy.position), enemy_range_to_str(enemy.range), range);
         BUSY_WAIT_ms(300);
+    }
+}
+static void test_millis(void)
+{
+    test_setup();
+    trace_init();
+    systick_init();
+    uint32_t current_ms = 0;
+    uint32_t prev_ms = 0;
+    while (1) {
+        current_ms = systick_millis();
+        if (current_ms - prev_ms == 1000) {
+            TRACE("%s", "1000ms elapsed");
+            prev_ms = current_ms;
+        }
     }
 }
 int main()

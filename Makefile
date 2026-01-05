@@ -84,6 +84,7 @@ C_SOURCES_WITH_HEADERS = \
 	Src/common/ring_buffer.c \
 	Src/common/assert_handler.c \
 	Src/common/trace.c \
+	Src/common/systick.c \
 	external/printf/printf.c \
 
 ifndef TEST
