@@ -69,14 +69,22 @@ CPPCHECK_FLAGS = \
 C_SOURCES_WITH_HEADERS = \
 	Src/app/drive.c \
 	Src/app/enemy.c \
+	Src/app/line.c \
 	Src/drivers/io.c \
 	Src/drivers/mcu_init.c \
 	Src/drivers/led.c \
 	Src/drivers/uart.c \
 	Src/drivers/ir_remote.c \
+	Src/drivers/pwm.c \
+	Src/drivers/tb6612fng.c \
+	Src/drivers/adc.c \
+	Src/drivers/qre1113.c \
+	Src/drivers/i2c.c \
+	Src/drivers/urm09.c \
 	Src/common/ring_buffer.c \
 	Src/common/assert_handler.c \
 	Src/common/trace.c \
+	Src/common/systick.c \
 	external/printf/printf.c \
 
 ifndef TEST

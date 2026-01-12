@@ -30,6 +30,24 @@ static void init_clocks()
     while (!(RCC->CR & (0x1 << 25)))
         ;
 
+    // turn PLLSAI1 off
+    RCC->CR &= ~(0x1 << 26);
+    while ((RCC->CR & (0x1 << 27)))
+        ;
+    /*enable PLLSAI1R as it it used as the ADC clock
+     * left at default divider2 */
+
+    RCC->PLLSAI1CFGR &= ~(0x3 << 25); // R
+    RCC->PLLSAI1CFGR &= ~(0x3 << 21); // Q
+    RCC->PLLSAI1CFGR &= ~(0x1 << 17); // P
+    RCC->PLLSAI1CFGR &= ~(0x7F << 8); // N
+    RCC->PLLSAI1CFGR |= (0x7 << 8); // N
+    RCC->PLLSAI1CFGR |= 0x1 << 24;
+    // turn PLLSAI1 on
+    RCC->CR |= 0x1 << 26;
+    while (!(RCC->CR & (0x1 << 27)))
+        ;
+
     // set sys clock as PLL
     RCC->CFGR &= ~0x3;
     RCC->CFGR = (RCC->CFGR & ~0x3) | 0x3;

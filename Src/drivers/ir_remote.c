@@ -8,12 +8,10 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define TIMER_PRESCALER (40u)
-#define TIMER_TICKS_PER_s (80000000U / TIMER_PRESCALER)
-#define TIMER_TICKS_PER_ms (TIMER_TICKS_PER_s / 1000U)
+#define TIMER_FREQ_ms (CLOCK_FREQ_80MHZ_ms / TIMER_PRESCALER) // 2Mhz
 // we want the period to be 1ms
 #define TIMER_INTERRUPT_PERIOD_ms (1u)
-#define TIMER_INTERRUPT_TICKS (TIMER_TICKS_PER_ms * TIMER_INTERRUPT_PERIOD_ms)
+#define TIMER_INTERRUPT_TICKS (TIMER_FREQ_ms * TIMER_INTERRUPT_PERIOD_ms)
 #define TIMER_TIMEOUT_ms (150U)
 // actual timer prescaler
 // formula Required frequency = clock freq /(PSC + 1)

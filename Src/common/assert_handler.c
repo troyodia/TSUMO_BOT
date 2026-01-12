@@ -7,7 +7,17 @@
 
 // Text + Program counter + Mull termination \0
 #define ASSERT_STRING_MAX_SIZE (15u + 6u + 1u)
-
+#define GPIO_SET_LOW(GPIO, pin)                                                                    \
+    {                                                                                              \
+        do {                                                                                       \
+            GPIO->MODER &= ~(0x3 << (2 * pin));                                                    \
+            GPIO->MODER |= (0x1 << (2 * pin));                                                     \
+            GPIO->OTYPER &= ~(0x1 << pin);                                                         \
+            GPIO->OSPEEDR &= ~(0x3 << (2 * pin));                                                  \
+            GPIO->OSPEEDR |= (0x3 << (2 * pin));                                                   \
+            GPIO->ODR &= ~(1 << pin);                                                              \
+        } while (0);                                                                               \
+    }
 static void assert_trace(void *program_counter)
 {
     // configure UART TX pin
@@ -31,21 +41,35 @@ static void assert_blink_led(void)
     /* Accessing registers directly to config TEST LED to prevent
        calling functions that have assertions, this prevents recursive assertions*/
     RCC->AHB2ENR |= 0x1;
-
-    GPIOA->MODER &= ~(0x3 << (2 * 5));
-    GPIOA->MODER |= (0x1 << (2 * 5));
-    GPIOA->OTYPER &= ~(0x1 << 5);
-    GPIOA->OSPEEDR &= ~(0x3 << (2 * 5));
-    GPIOA->OSPEEDR |= (0x3 << (2 * 5));
-
+    GPIO_SET_LOW(GPIOA, 5);
     volatile int j;
     while (1) {
         GPIOA->ODR ^= (0x1 << 5);
         BUSY_WAIT_ms(90)
     };
 }
+
+// stop motors when an assert occurs as a saftey precaution
+void assert_stop_motors(void)
+{
+    // write to io pins directly to set motor off
+    // set up alternate function of pwm pins
+    GPIOC->AFR[0] &= ~(0xF << (6 * 4));
+    GPIOC->AFR[0] |= (0x2 << (6 * 4));
+    GPIOC->AFR[0] &= ~(0xF << (7 * 4));
+    GPIOC->AFR[0] |= (0x2 << (7 * 4));
+
+    GPIO_SET_LOW(GPIOC, 6); // pwm left
+    GPIO_SET_LOW(GPIOC, 7); // pwm right
+    GPIO_SET_LOW(GPIOB, 10); // left motor ch1
+    GPIO_SET_LOW(GPIOB, 11); // left motor ch2
+    GPIO_SET_LOW(GPIOB, 12); // right motor ch1
+    GPIO_SET_LOW(GPIOB, 13); // right motor ch2
+}
+
 void assert_handler(void *program_counter)
 {
+    assert_stop_motors();
     BREAKPOINT
     assert_trace(program_counter);
     assert_blink_led();
