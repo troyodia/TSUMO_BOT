@@ -26,10 +26,7 @@ static bool initialized = false;
 static uint8_t timer_ms = 0;
 static uint16_t pulse_count = 0;
 
-static uint8_t buffer[IR_BUFFER_SIZE];
-static struct ring_buffer ir_buffer = {
-    .size = IR_BUFFER_SIZE, .head = 0, .tail = 0, .buffer = buffer
-};
+STATIC_RING_BUFFER(ir_buffer, IR_BUFFER_SIZE, uint8_t);
 
 static union {
     struct
@@ -96,7 +93,7 @@ static void isr_pulse_PA_8(void)
         ir_message.ir_message_raw |= (timer_ms < 2) ? 0 : 1;
     }
     if (is_ir_pulses_complete(pulse_count)) {
-        ring_buffer_put(&ir_buffer, ir_message.ir_decoded.command);
+        ring_buffer_put(&ir_buffer, &ir_message.ir_decoded.command);
     }
     start_timer();
 }
@@ -131,7 +128,7 @@ ir_cmd_e ir_remote_get_cmd(void)
     io_disable_interrupt(IO_EXTI_9_5_LINE);
     ir_cmd_e cmd = IR_CMD_NONE;
     if (!ring_buffer_empty(&ir_buffer)) {
-        cmd = ring_buffer_get(&ir_buffer);
+        ring_buffer_get(&ir_buffer, &cmd);
     }
     io_enable_interrupt(IO_EXTI_9_5_LINE);
 

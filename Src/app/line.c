@@ -5,7 +5,7 @@
 /* threshold to distinguish between white and black platform
  * When the sensor voltage above the threshold the black platform is detected and the opposite is
  * true for detection of the white platform */
-#define LINE_DETECT_VOLTAGE_THRESHOLD (700U)
+#define LINE_DETECT_VOLTAGE_THRESHOLD (3450U)
 bool initialized = false;
 
 void line_init(void)
