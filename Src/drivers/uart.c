@@ -8,10 +8,9 @@
 #include <assert.h>
 #include <string.h>
 #define UART_RING_BUFFER_SIZE (16)
-static uint8_t buffer[UART_RING_BUFFER_SIZE];
-static struct ring_buffer tx_buffer = {
-    .buffer = buffer, .head = 0, .tail = 0, .size = (sizeof(buffer) / sizeof(buffer[0]))
-};
+
+STATIC_RING_BUFFER(tx_buffer, UART_RING_BUFFER_SIZE, uint8_t);
+
 /* Caluculate the USARTDIV which is used to configure the baudrate for the USART peripheral
  * USARTDIV = SystemCoreClock / baudrate
  * The USART peripheral here is configured to run in normal mode (16 smapling, 8 smapling is
@@ -108,10 +107,11 @@ void USART3_IRQHandler(void)
 
         ASSERT_INTERRUPT(!ring_buffer_empty(&tx_buffer));
         // Add character to TDR
-        USART3->TDR = ring_buffer_peek(&tx_buffer);
-
+        uint8_t c = 0;
+        ring_buffer_peek_tail(&tx_buffer, &c);
+        USART3->TDR = c;
         // remove the transmitted data from the TX buffer
-        ring_buffer_get(&tx_buffer);
+        ring_buffer_get(&tx_buffer, NULL);
 
         // clear the TXEIE interrupt
         USART3->CR1 &= ~(0x1 << 7);
@@ -137,7 +137,7 @@ void _putchar(char c)
         ;
     NVIC_DisableIRQ(USART3_IRQn);
     bool tx_ongoing = !ring_buffer_empty(&tx_buffer);
-    ring_buffer_put(&tx_buffer, c);
+    ring_buffer_put(&tx_buffer, &c);
     if (!tx_ongoing) {
         uart_tx_start();
     }
